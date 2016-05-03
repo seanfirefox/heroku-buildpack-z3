@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo z3-Prover
+exit 0

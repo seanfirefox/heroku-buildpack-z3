@@ -1,0 +1,49 @@
+#!/bin/bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+### Configure environment
+
+set -o errexit
+set -o pipefail
+set -o nounset
+set -e
+unset GIT_DIR
+
+### Constants
+
+Z3_CLONE_URL='https://github.com/Z3Prover/z3.git'
+
+### Configure directories
+
+BUILD_DIR=${1:-}
+CACHE_DIR=${2:-}
+ENV_DIR=${3:-}
+
+Z3_REPO_CACHE="$CACHE_DIR/z3"
+
+mkdir -p "$BUILD_DIR/.heroku/z3/bin/"
+export PATH="$BUILD_DIR/.heroku/z3/bin":$PATH
+
+LOG_FILE='/tmp/z3-build-log.txt'
+echo ""> "$LOG_FILE"
+
+if [[ ! -d $Z3_REPO_CACHE ]];
+then
+  echo "-----> Cloning $Z3_CLONE_URL"
+  git clone $Z3_CLONE_URL $Z3_REPO_CACHE
+
+  echo "-----> Generating makefile..."
+  (cd $Z3_REPO_CACHE && python scripts/mk_make.py)
+
+  echo "-----> Running make..."
+  (cd $Z3_REPO_CACHE/build && make)
+  echo "       done!"
+fi
+
+echo "-----> Exporting z3 binary..."
+cp $Z3_REPO_CACHE/build/z3 $BUILD_DIR/.heroku/z3/bin/z3
+
+echo "-----> Setting Z3_BINARY_PATH"
+echo "$BUILD_DIR/.heroku/z3/bin/z3" > $ENV_DIR/Z3_BINARY_PATH
+
+echo "-----> z3 build succeeded!"
