@@ -45,5 +45,6 @@ cp $Z3_REPO_CACHE/build/z3 $BUILD_DIR/.heroku/z3/bin/z3
 
 echo "-----> Setting Z3_BINARY_PATH"
 echo "$BUILD_DIR/.heroku/z3/bin/z3" > $ENV_DIR/Z3_BINARY_PATH
+export Z3_BINARY_PATH="$ENV_DIR/Z3_BINARY_PATH"
 
 echo "-----> z3 build succeeded!"
