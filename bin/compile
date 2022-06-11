@@ -33,10 +33,10 @@ then
   git clone $Z3_CLONE_URL $Z3_REPO_CACHE
 
   echo "-----> Generating makefile..."
-  (cd $Z3_REPO_CACHE && python scripts/mk_make.py -x)
+  (cd $Z3_REPO_CACHE && camke -G "Unix Makefiles" ../)
 
   echo "-----> Running make..."
-  (cd $Z3_REPO_CACHE/build && nmake)
+  (cd $Z3_REPO_CACHE/build && make -j4)
   echo "       done!"
 fi
 
